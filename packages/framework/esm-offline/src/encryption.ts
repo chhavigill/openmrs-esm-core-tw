@@ -115,7 +115,7 @@ function generateCryptoKey(input: string): Promise<CryptoKey> {
   );
 }
 
-async function encryptData(data: string, cryptoKey: CryptoKey): Promise<[string, string]> {
+export async function encryptData(data: string, cryptoKey: CryptoKey): Promise<[string, string]> {
   let nonce = generateNonce();
   let algorithm = { name: 'AES-GCM', iv: nonce } as AesGcmParams;
   let result = await getCryptoObject().subtle.encrypt(algorithm, cryptoKey, encode(data));
@@ -127,7 +127,9 @@ async function encryptData(data: string, cryptoKey: CryptoKey): Promise<[string,
 
 async function decryptData(data: string, cryptoKey: CryptoKey, nonce: string): Promise<string> {
   const algorithm = { name: 'AES-GCM', iv: encode(nonce, 8) } as AesGcmParams;
-  let result = await getCryptoObject().subtle.decrypt(algorithm, cryptoKey, encode(data));
+  let result;
+  try { result = await getCryptoObject().subtle.decrypt(algorithm, cryptoKey, encode(data)); }
+  catch(e) { console.error(`[openmrs] ${e}`); }
   return Promise.resolve(decode(result));
 }
 
