@@ -1,4 +1,13 @@
-import { setCryptoKey, clearPasswordData, isPasswordExpired, encryptData, isPasswordCorrect } from '@openmrs/esm-offline/src/encryption';
+import { 
+    setCryptoKey, 
+    clearPasswordData, 
+    isPasswordExpired, 
+    encryptData, 
+    isPasswordCorrect, 
+    encrypt, 
+    decrypt, 
+    unsetCryptoKey 
+} from '@openmrs/esm-offline/src/encryption';
 import { setPasswordData } from "./encryption";
 
 const crypto = require('crypto');
@@ -73,5 +82,64 @@ describe("isPasswordCorrect", () => {
 
         let result = await isPasswordCorrect("password2");
         expect(result).toBe(false);
+    })
+})
+
+let data = { data: "content" }
+let stringifiedData = JSON.stringify(data);
+let jsonData = JSON.parse(stringifiedData);
+
+describe("encrypt and decrypt", () => {
+    beforeEach(async () => {
+        unsetCryptoKey();
+    })
+
+    it("encrypts and decrypts data where correct nonce is provided", async () => {
+        await setCryptoKey("password");
+        const encryptionResult = await encrypt(jsonData);
+        expect(encryptionResult).not.toHaveProperty("data");
+        expect(encryptionResult).toHaveProperty("content");
+        expect(encryptionResult).toHaveProperty("nonce");
+
+
+        const encryptedJsonData = JSON.parse(JSON.stringify(encryptionResult));
+        const decryptionResult = await decrypt(encryptedJsonData);
+        expect(decryptionResult).toHaveProperty("data", "content");
+        expect(decryptionResult).not.toHaveProperty("content");
+        expect(decryptionResult).not.toHaveProperty("nonce");
+    })
+
+    it("does not decrypt data where incorrect nonce is provided", async () => {
+        await setCryptoKey("password");
+        const encryptionResult = await encrypt(jsonData);
+        expect(encryptionResult).not.toHaveProperty("data");
+        expect(encryptionResult).toHaveProperty("content");
+        expect(encryptionResult).toHaveProperty("nonce");
+
+        encryptionResult.nonce = "incorrect nonce";
+        const encryptedJsonData = JSON.parse(JSON.stringify(encryptionResult));
+        const decryptionResult = await decrypt(encryptedJsonData);
+        expect(decryptionResult).not.toHaveProperty("data");
+    })
+
+    it("does not decrypt data where incorrect key is provided", async () => {
+        await setCryptoKey("password");
+        const encryptionResult = await encrypt(jsonData);
+        expect(encryptionResult).not.toHaveProperty("data");
+        expect(encryptionResult).toHaveProperty("content");
+        expect(encryptionResult).toHaveProperty("nonce");
+
+        await setCryptoKey("password2");
+        const encryptedJsonData = JSON.parse(JSON.stringify(encryptionResult));
+        const decryptionResult = await decrypt(encryptedJsonData);
+        expect(decryptionResult).not.toHaveProperty("data");
+    })
+
+    it("encrypt throws error when key is not set", async () => {
+        await expect(encrypt(jsonData)).rejects.toThrow(Error("Encryption password not set. Offline features are disabled."));
+    })
+
+    it("decrypt throws error when key is not set", async () => {
+        await expect(decrypt(jsonData)).rejects.toThrow(Error("Encryption password not set. Offline features are disabled."));
     })
 })
