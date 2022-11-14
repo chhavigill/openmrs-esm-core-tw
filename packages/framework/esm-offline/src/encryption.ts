@@ -10,7 +10,7 @@ const ENCRYPTED_KEY_CREATION_TIME_KEY = "encryptedKeyCreationTime";
 const TIME_ONE_HOUR = 3600000;
 
 class EncryptionKey {
-  key: CryptoKey
+  key: CryptoKey | null
 };
 
 var encryptionKey: EncryptionKey = new EncryptionKey(); 
@@ -67,7 +67,7 @@ export async function isPasswordCorrect(password: string = ""): Promise<boolean>
   return Promise.resolve(referenceText == decryptedReference);
 }
 
-async function getCryptoKey() {
+function getCryptoKey() {
   return encryptionKey.key;
 }
 
@@ -78,9 +78,19 @@ export async function setCryptoKey(input: CryptoKey | string): Promise<CryptoKey
   return Promise.resolve(encryptionKey.key);
 }
 
+export async function unsetCryptoKey() {
+  encryptionKey.key = null;
+}
+
 export async function encrypt(json: JSON) {
   let data = JSON.stringify(json);
-  let key = await getCryptoKey();
+
+  let key = getCryptoKey();
+  console.log("key", key);
+  if(!key) {
+    throw new Error("Encryption password not set. Offline features are disabled.");
+  }
+
   let encryptedData = await encryptData(data, key);
   return { 
     content: encryptedData[0],
@@ -91,7 +101,13 @@ export async function encrypt(json: JSON) {
 export async function decrypt(json: JSON) {
   let data = json[ENCRYPTION_CONTENT_KEY];
   let nonce = json[ENCRYPTION_NONCE_KEY];
-  let key = await getCryptoKey();
+
+  let key = getCryptoKey();
+  console.log("key", key);
+  if(!key) {
+    throw new Error("Encryption password not set. Offline features are disabled.");
+  }
+
   let decryptedData = await decryptData(data, key, nonce);
   decryptedData = decryptedData.length == 0 ? JSON.stringify({}) : decryptedData;
   return JSON.parse(decryptedData);

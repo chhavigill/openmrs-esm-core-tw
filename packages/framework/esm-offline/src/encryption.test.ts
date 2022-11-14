@@ -1,4 +1,13 @@
-import { setCryptoKey, clearPasswordData, isPasswordExpired, encryptData, isPasswordCorrect, encrypt, decrypt } from '@openmrs/esm-offline/src/encryption';
+import { 
+    setCryptoKey, 
+    clearPasswordData, 
+    isPasswordExpired, 
+    encryptData, 
+    isPasswordCorrect, 
+    encrypt, 
+    decrypt, 
+    unsetCryptoKey 
+} from '@openmrs/esm-offline/src/encryption';
 import { setPasswordData } from "./encryption";
 
 const crypto = require('crypto');
@@ -81,6 +90,10 @@ let stringifiedData = JSON.stringify(data);
 let jsonData = JSON.parse(stringifiedData);
 
 describe("encrypt and decrypt", () => {
+    beforeEach(async () => {
+        unsetCryptoKey();
+    })
+
     it("encrypts and decrypts data where correct nonce is provided", async () => {
         await setCryptoKey("password");
         const encryptionResult = await encrypt(jsonData);
@@ -120,5 +133,13 @@ describe("encrypt and decrypt", () => {
         const encryptedJsonData = JSON.parse(JSON.stringify(encryptionResult));
         const decryptionResult = await decrypt(encryptedJsonData);
         expect(decryptionResult).not.toHaveProperty("data");
+    })
+
+    it("encrypt throws error when key is not set", async () => {
+        await expect(encrypt(jsonData)).rejects.toThrow(Error("Encryption password not set. Offline features are disabled."));
+    })
+
+    it("decrypt throws error when key is not set", async () => {
+        await expect(decrypt(jsonData)).rejects.toThrow(Error("Encryption password not set. Offline features are disabled."));
     })
 })
