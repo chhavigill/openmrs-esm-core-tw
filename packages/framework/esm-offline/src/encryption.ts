@@ -93,6 +93,7 @@ export async function decrypt(json: JSON) {
   let nonce = json[ENCRYPTION_NONCE_KEY];
   let key = await getCryptoKey();
   let decryptedData = await decryptData(data, key, nonce);
+  decryptedData = decryptedData.length == 0 ? JSON.stringify({}) : decryptedData;
   return JSON.parse(decryptedData);
 }
 
@@ -129,7 +130,10 @@ async function decryptData(data: string, cryptoKey: CryptoKey, nonce: string): P
   const algorithm = { name: 'AES-GCM', iv: encode(nonce, 8) } as AesGcmParams;
   let result;
   try { result = await getCryptoObject().subtle.decrypt(algorithm, cryptoKey, encode(data)); }
-  catch(e) { console.error(`[openmrs] ${e}`); }
+  catch(e) { 
+    console.error(`[openmrs] ${e}`);
+    result = new ArrayBuffer(0);
+  }
   return Promise.resolve(decode(result));
 }
 
