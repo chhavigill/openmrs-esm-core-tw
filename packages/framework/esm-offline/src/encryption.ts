@@ -86,7 +86,6 @@ export async function encrypt(json: JSON) {
   let data = JSON.stringify(json);
 
   let key = getCryptoKey();
-  console.log("key", key);
   if(!key) {
     throw new Error("Encryption password not set. Offline features are disabled.");
   }
@@ -103,7 +102,6 @@ export async function decrypt(json: JSON) {
   let nonce = json[ENCRYPTION_NONCE_KEY];
 
   let key = getCryptoKey();
-  console.log("key", key);
   if(!key) {
     throw new Error("Encryption password not set. Offline features are disabled.");
   }

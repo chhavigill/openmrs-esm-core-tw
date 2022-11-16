@@ -32,7 +32,6 @@ const offlineEncryptionPlugin = {
         if (!encryption) {
             return response;
         }
-        console.log('request url::', request.url)
         if (request.url.includes("fhir")) {
             var responseClone = response.clone();
             var contentType;

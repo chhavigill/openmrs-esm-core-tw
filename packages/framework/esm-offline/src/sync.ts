@@ -4,6 +4,7 @@ import { getLoggedInUser } from "@openmrs/esm-api";
 import { createGlobalStore } from "@openmrs/esm-state";
 import { OfflineDb } from "./offline-db";
 import { encryption, decrypt, encrypt } from "./encryption";
+import { dispatchNotificationShown } from "@openmrs/esm-globals";
 
 /**
  * Defines an item queued up in the offline synchronization queue.
@@ -191,7 +192,7 @@ async function processHandler(
   await db.syncQueue.where({ type, userId }).each(async (item, cursor) => {
     var content: any;
     if (item.encrypted) {
-      content = await decrypt(item.content);
+      content = await performCryptoOperation("decrypt", item.content);
     } else {
       content = item.content;
     }
@@ -237,6 +238,22 @@ async function getUserId() {
   return user?.uuid || "*";
 }
 
+async function performCryptoOperation(operation: string, content: JSON) {
+  try {
+    if (operation == "encrypt") {
+      return await encrypt(content);
+    }
+    else if (operation == "decrypt") {
+      return await decrypt(content);
+    }
+  } catch(e) {
+    dispatchNotificationShown({
+      description: e.message,
+    });
+    throw e;
+  }
+}
+
 /**
  * Enqueues a new item in the sync queue for a specific user.
  * @param userId The user with whom the sync item should be associated with.
@@ -264,7 +281,7 @@ export async function queueSynchronizationItemFor<T>(
   const id = await db.syncQueue
     .add({
       type: type,
-      content: encryption ? await encrypt(content as unknown as JSON) : content,
+      content: encryption ? await performCryptoOperation("encrypt", content as unknown as JSON) : content,
       encrypted: encryption,
       userId,
       descriptor: descriptor || {},
@@ -302,7 +319,7 @@ export async function getSynchronizationItemsFor<T>(
   const fullItems = await getFullSynchronizationItemsFor<T>(userId, type);
   let itemsContent: any[] = [];
   for (const item of fullItems) {
-    itemsContent.push(item.encrypted ? await decrypt(item.content as unknown as JSON) : item.content);
+    itemsContent.push(item.encrypted ? await performCryptoOperation("decrypt", item.content as unknown as JSON) : item.content);
   }
   return itemsContent;
 }
