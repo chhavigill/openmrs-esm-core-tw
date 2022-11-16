@@ -229,6 +229,74 @@ function setupOpenMRS() {
         online: true,
         offline: false,
       },
+      {
+        name: "offline-tools-page-encryption-link",
+        slot: "offline-tools-page-slot",
+        load: getSyncLifecycle(
+          () =>
+            OfflineToolsNavLink({
+              page: "encryption",
+              title: "Offline encryption",
+            }),
+          options
+        ),
+        meta: {
+          name: "encryption",
+          slot: "offline-tools-page-encryption-slot",
+        },
+        online: true,
+        offline: true,
+      },
+      {
+        name: "offline-tools-page-encryption-offline-page",
+        slot: "offline-tools-page-encryption-slot",
+        load: getAsyncLifecycle(
+          () => import("./offline-encryption/offline-tools-demo.component"),
+          {
+            featureName: "offline-tools-page-encryption",
+            moduleName,
+          }
+        ),
+      },
+      {
+        name: "offline-encryption-online-dialog",
+        load: getAsyncLifecycle(
+          () =>
+            import(
+              "./offline-encryption/offline-security-online-modal.component"
+            ),
+          {
+            featureName: "offline-security-online",
+            moduleName,
+          }
+        ),
+      },
+      {
+        name: "offline-encryption-offline-dialog",
+        load: getAsyncLifecycle(
+          () =>
+            import(
+              "./offline-encryption/offline-security-offline-modal.component"
+            ),
+          {
+            featureName: "offline-security-offline",
+            moduleName,
+          }
+        ),
+      },
+      {
+        name: "offline-encryption-reset-password-dialog",
+        load: getAsyncLifecycle(
+          () =>
+            import(
+              "./offline-encryption/offline-security-reset-password-modal.component"
+            ),
+          {
+            featureName: "offline-security-reset-password",
+            moduleName,
+          }
+        ),
+      },
     ],
   };
 }

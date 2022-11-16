@@ -1,0 +1,78 @@
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  TextInput,
+  Button,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@carbon/react";
+import styles from "./offline-security-modals.styles.scss";
+
+interface OfflineSecurityOnlineModeModallProps {
+  closeModal: Function;
+}
+
+const OfflineSecurityOnlineModeModal: React.FC<
+  OfflineSecurityOnlineModeModallProps
+> = ({ closeModal }) => {
+  const { t } = useTranslation();
+  const [input, setInput] = useState<string>("");
+  const [error, setError] = useState<boolean>(false);
+
+  const handleInputChange = (e) => {
+    const { value } = e.target;
+    setInput(value);
+  };
+
+  const handleSave = (e) => {
+    setError(true);
+  };
+
+  return (
+    <>
+      <ModalHeader className={styles.offlineSecurityHeader}>
+        {t("offlineSecurity", "Offline Security")}
+      </ModalHeader>
+      <ModalBody>
+        <p className={styles.bodyLong01}>
+          {t(
+            "enterPasswordOfflineMode",
+            "Please enter a password for encryption in offline mode."
+          )}
+        </p>
+        <p className={styles.bodyLong01}>
+          {t(
+            "offlinePasswordRecomendation",
+            "Recommendation: Use your login password for encryption."
+          )}
+        </p>
+        <div className={styles.offlineSecurityInput}>
+          <TextInput
+            type="password"
+            id="password"
+            name="password"
+            labelText={t("password", "Password")}
+            value={input}
+            onChange={handleInputChange}
+            invalidText={t(
+              "incorrectPassword",
+              "Password entered is incorrect"
+            )}
+            invalid={error}
+          />
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <Button size="lg" kind="secondary" onClick={() => close()}>
+          {t("forgotPassword", "Forgot Password")}
+        </Button>
+        <Button size="lg" kind="primary" onClick={handleSave} autoFocus>
+          {t("continue", "Continue")}
+        </Button>
+      </ModalFooter>
+    </>
+  );
+};
+
+export default OfflineSecurityOnlineModeModal;
