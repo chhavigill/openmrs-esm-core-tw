@@ -13,6 +13,15 @@ import {
 } from "./sync";
 import { OfflineDb } from "./offline-db";
 
+jest.mock("@openmrs/esm-offline/src/encryption", () => {
+  const encryptionModule = jest.requireActual("@openmrs/esm-offline/src/encryption");
+  return {
+      _esModule: true,
+      ...encryptionModule,
+      encryption: false
+  }
+})
+
 interface MockSyncItem {
   value: number;
 }
