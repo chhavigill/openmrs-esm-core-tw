@@ -9,6 +9,7 @@ export const routes = {
   offlineToolsPatients: `offline-tools/patients`,
   offlineToolsPatientOfflineData: `offline-tools/patients/:patientUuid/offline-data`,
   offlineToolsActions: `offline-tools/actions`,
+  offlineToolsEncryption: `offline-tools/encryption`,
 };
 
 export const cacheForOfflineHeaders: OmrsOfflineHttpHeaders = {
