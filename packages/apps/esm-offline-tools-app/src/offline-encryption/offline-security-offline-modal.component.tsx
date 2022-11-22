@@ -8,6 +8,7 @@ import {
   ModalFooter,
 } from "@carbon/react";
 import styles from "./offline-security-modals.styles.scss";
+import { isPasswordCorrect } from "@openmrs/esm-offline/src/encryption";
 
 interface OfflineSecurityOnlineModeModallProps {
   closeModal: Function;
@@ -20,9 +21,10 @@ const OfflineSecurityOnlineModeModal: React.FC<
   const [input, setInput] = useState<string>("");
   const [error, setError] = useState<boolean>(false);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = async (e) => {
     const { value } = e.target;
     setInput(value);
+    setError(await isPasswordCorrect(value));
   };
 
   const handleSave = (e) => {

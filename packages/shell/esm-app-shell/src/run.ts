@@ -41,13 +41,6 @@ import { setupI18n } from "./locale";
 import { loadModules } from "./load-modules";
 import { appName, getCoreExtensions } from "./ui";
 import { registerModules, sharedDependencies } from "./dependencies";
-import { 
-  setCryptoKey, 
-  setPasswordData, 
-  clearPasswordData, 
-  isPasswordExpired, 
-  isPasswordCorrect
-} from "@openmrs/esm-offline/src/encryption";
 
 /**
  * Loads the frontend modules (apps and widgets). Should be done *after*
@@ -297,25 +290,6 @@ async function precacheGlobalStaticDependencies() {
       e
     )
   );
-}
-
-async function updateEncryptionPassword() {
-  if(isPasswordExpired()) {
-    clearPasswordData();
-    //user enters password
-    let response = await messageOmrsServiceWorker({
-      type: "updateEncryptionKey",
-      password: "password"
-    });
-    setCryptoKey(response.result);
-    setPasswordData(response.result);
-  }
-  else {
-    //user enters password
-    // await messageOmrsServiceWorker({type: "clearCachedEncryptedData"});
-    // await deleteAllSynchronizationItems();
-    var result = await isPasswordCorrect("password");
-  }
 }
 
 async function precacheImportMap() {

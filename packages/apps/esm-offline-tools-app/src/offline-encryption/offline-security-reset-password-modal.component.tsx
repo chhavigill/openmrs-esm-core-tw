@@ -8,6 +8,8 @@ import {
   ModalFooter,
 } from "@carbon/react";
 import styles from "./offline-security-modals.styles.scss";
+import { setCryptoKey, setPasswordData, clearPasswordData } from "@openmrs/esm-offline/src/encryption";
+import { messageOmrsServiceWorker } from "@openmrs/esm-framework";
 
 interface OfflineSecurityOnlineModeModallProps {
   closeModal: Function;
@@ -42,7 +44,18 @@ const OfflineSecurityOnlineModeModal: React.FC<
       return;
     }
     //handle save
+    updateEncryptionPassword(error.password);
   };
+
+  async function updateEncryptionPassword(password: string) {
+    clearPasswordData();
+    let response = await messageOmrsServiceWorker({
+      type: "updateEncryptionKey",
+      password: password
+    });
+    setCryptoKey(response.result);
+    setPasswordData(response.result);
+  }
 
   const validateInput = (e) => {
     let { name, value } = e.target;
