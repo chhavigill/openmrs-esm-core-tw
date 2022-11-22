@@ -9,6 +9,7 @@ import {
 } from "@carbon/react";
 import styles from "./offline-security-modals.styles.scss";
 import { isPasswordCorrect } from "@openmrs/esm-offline/src/encryption";
+import { deleteAllSynchronizationItems, messageOmrsServiceWorker } from "@openmrs/esm-offline";
 
 interface OfflineSecurityOnlineModeModallProps {
   closeModal: Function;
@@ -29,6 +30,14 @@ const OfflineSecurityOnlineModeModal: React.FC<
 
   const handleSave = (e) => {
     setError(true);
+  };
+
+  const handleForgotPassword = async(e) => {
+    await messageOmrsServiceWorker({
+      type: "clearCachedEncryptedData"
+    });
+    deleteAllSynchronizationItems();
+    close();
   };
 
   return (
@@ -66,7 +75,7 @@ const OfflineSecurityOnlineModeModal: React.FC<
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button size="lg" kind="secondary" onClick={() => close()}>
+        <Button size="lg" kind="secondary" onClick={handleForgotPassword}>
           {t("forgotPassword", "Forgot Password")}
         </Button>
         <Button size="lg" kind="primary" onClick={handleSave} autoFocus>
