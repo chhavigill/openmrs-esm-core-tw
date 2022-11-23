@@ -224,7 +224,6 @@ async function setupOffline() {
     );
     await activateOfflineCapability();
     setupOfflineStaticDependencyPrecaching();
-    updateEncryptionPassword();
   } catch (e) {
     console.error("Error while setting up offline mode.", e);
     showNotification({
