@@ -32,7 +32,6 @@ export default function OfflineToolsDemo() {
       >
         {"Reset"}
       </Button>
-      PUTAS
     </div>
   );
 }
