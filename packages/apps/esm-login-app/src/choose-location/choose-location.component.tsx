@@ -45,10 +45,6 @@ export const ChooseLocation: React.FC<ChooseLocationProps> = ({
         : Promise.resolve();
 
       sessionDefined.then(() => {
-        if (isPasswordExpired && isPasswordExpired()) {
-          openModal("offline-encryption-online-dialog");
-          return;
-        }
         if (
           referrer &&
           !["/", "/login", "/login/location"].includes(referrer)
@@ -64,8 +60,14 @@ export const ChooseLocation: React.FC<ChooseLocationProps> = ({
         return;
       });
     },
-    [referrer, config.links.loginSuccess, returnToUrl, openModal]
+    [referrer, config.links.loginSuccess, returnToUrl]
   );
+
+  useEffect(() => {
+    if (isPasswordExpired && isPasswordExpired()) {
+      openModal("offline-encryption-online-dialog");
+    }
+  }, [openModal]);
 
   // Handle cases where the location picker is disabled, there is only one
   // location, or there are no locations.
