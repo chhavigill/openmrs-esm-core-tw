@@ -6,4 +6,5 @@ export * from "./sync";
 export * from "./uuid";
 export * from "./offline-patient-data";
 export * from "./dynamic-offline-data";
+export { isPasswordExpired } from "./encryption";
 export { getOfflineDb } from "./offline-db";

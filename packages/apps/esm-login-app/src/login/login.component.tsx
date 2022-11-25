@@ -9,12 +9,7 @@ import {
 } from "@carbon/react";
 import { ArrowLeft, ArrowRight } from "@carbon/react/icons";
 import { useTranslation } from "react-i18next";
-import {
-  useConfig,
-  interpolateUrl,
-  useSession,
-  showModal,
-} from "@openmrs/esm-framework";
+import { useConfig, interpolateUrl, useSession } from "@openmrs/esm-framework";
 import { performLogin } from "./login.resource";
 import styles from "./login.scss";
 
@@ -97,12 +92,6 @@ const Login: React.FC<LoginProps> = ({ isLoginEnabled }) => {
     setPassword("");
   }, []);
 
-  const openModal = useCallback((modal) => {
-    const dispose = showModal(modal, {
-      closeModal: () => dispose(),
-    });
-  }, []);
-
   const handleSubmit = useCallback(
     async (evt: React.FormEvent<HTMLFormElement>) => {
       evt.preventDefault();
@@ -121,7 +110,6 @@ const Login: React.FC<LoginProps> = ({ isLoginEnabled }) => {
         if (!valid) {
           throw new Error("invalidCredentials");
         }
-        openModal("offline-encryption-online-dialog");
       } catch (error) {
         setErrorMessage(error.message);
         resetUserNameAndPassword();
@@ -129,14 +117,7 @@ const Login: React.FC<LoginProps> = ({ isLoginEnabled }) => {
 
       return false;
     },
-    [
-      continueLogin,
-      resetUserNameAndPassword,
-      openModal,
-      showPassword,
-      username,
-      password,
-    ]
+    [continueLogin, resetUserNameAndPassword, showPassword, username, password]
   );
 
   const logo = config.logo.src ? (

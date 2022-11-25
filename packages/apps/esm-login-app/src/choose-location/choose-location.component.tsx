@@ -5,10 +5,12 @@ import {
   useConfig,
   setSessionLocation,
   useSession,
+  showModal,
 } from "@openmrs/esm-framework";
 import { useLoginLocations } from "./choose-location.resource";
 import LoadingIcon from "../loading/loading.component";
 import LocationPicker from "../location-picker/location-picker.component";
+import { isPasswordExpired } from "@openmrs/esm-offline/src/encryption";
 
 export interface LoginReferrer {
   referrer?: string;
@@ -30,6 +32,12 @@ export const ChooseLocation: React.FC<ChooseLocationProps> = ({
     config.chooseLocation.useLoginLocationTag
   );
 
+  const openModal = useCallback((modal) => {
+    const dispose = showModal(modal, {
+      closeModal: () => dispose(),
+    });
+  }, []);
+
   const changeLocation = useCallback(
     (locationUuid?: string) => {
       const sessionDefined = locationUuid
@@ -37,6 +45,10 @@ export const ChooseLocation: React.FC<ChooseLocationProps> = ({
         : Promise.resolve();
 
       sessionDefined.then(() => {
+        if (isPasswordExpired && isPasswordExpired()) {
+          openModal("offline-encryption-online-dialog");
+          return;
+        }
         if (
           referrer &&
           !["/", "/login", "/login/location"].includes(referrer)
@@ -52,7 +64,7 @@ export const ChooseLocation: React.FC<ChooseLocationProps> = ({
         return;
       });
     },
-    [referrer, config.links.loginSuccess, returnToUrl]
+    [referrer, config.links.loginSuccess, returnToUrl, openModal]
   );
 
   // Handle cases where the location picker is disabled, there is only one
