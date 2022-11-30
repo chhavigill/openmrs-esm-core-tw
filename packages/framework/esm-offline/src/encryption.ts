@@ -9,11 +9,7 @@ const ENCRYPTED_REFERENCE_NONCE_KEY = "encryptedReferenceNonce";
 const ENCRYPTED_KEY_CREATION_TIME_KEY = "encryptedKeyCreationTime";
 const TIME_ONE_HOUR = 3600000;
 
-class EncryptionKey {
-  key: CryptoKey | null
-};
-
-var encryptionKey: EncryptionKey = new EncryptionKey(); 
+var encryptionKey: CryptoKey | null; 
 
 function getEncryptedReference() {
   return [
@@ -68,18 +64,18 @@ export async function isPasswordCorrect(password: string = ""): Promise<boolean>
 }
 
 function getCryptoKey() {
-  return encryptionKey.key;
+  return encryptionKey;
 }
 
 export async function setCryptoKey(key: CryptoKey): Promise<CryptoKey>
 export async function setCryptoKey(password: string): Promise<CryptoKey>
 export async function setCryptoKey(input: CryptoKey | string): Promise<CryptoKey> {
-  encryptionKey.key = (typeof input === "string") ? await generateCryptoKey(input) : input;
-  return Promise.resolve(encryptionKey.key);
+  encryptionKey = (typeof input === "string") ? await generateCryptoKey(input) : input;
+  return Promise.resolve(encryptionKey);
 }
 
 export async function unsetCryptoKey() {
-  encryptionKey.key = null;
+  encryptionKey = null;
 }
 
 export async function encrypt(json: JSON) {

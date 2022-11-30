@@ -25,11 +25,11 @@ const OfflineSecurityOnlineModeModal: React.FC<
   const handleInputChange = async (e) => {
     const { value } = e.target;
     setInput(value);
-    setError(await isPasswordCorrect(value));
   };
 
-  const handleSave = (e) => {
-    setError(true);
+  const handleSave = async (e) => {
+    let bool = await isPasswordCorrect(input);
+    bool ? closeModal() : setError(bool);
   };
 
   const handleForgotPassword = async(e) => {

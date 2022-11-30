@@ -45,6 +45,7 @@ const OfflineSecurityOnlineModal: React.FC<
     }
     //handle save
     updateEncryptionPassword(error.password);
+    closeModal();
   };
 
   async function updateEncryptionPassword(password: string) {
