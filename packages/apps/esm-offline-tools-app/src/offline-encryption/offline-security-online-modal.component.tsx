@@ -39,12 +39,13 @@ const OfflineSecurityOnlineModal: React.FC<
   };
 
   const handleSave = (e) => {
+    e.preventDefault();
     validateInput(e);
     if (error.password || error.confirmPassword) {
       return;
     }
     //handle save
-    updateEncryptionPassword(error.password);
+    updateEncryptionPassword(input.password);
     closeModal();
   };
 
