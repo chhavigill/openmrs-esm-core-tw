@@ -66,6 +66,27 @@ const OfflineSecurityOnlineModal: React.FC<
         case "password":
           if (!value) {
             stateObj[name] = t("enterPassword", "Please enter a password.");
+          }
+          if (value.length < 8) {
+            stateObj[name] = t("Password must be atleast 8 character long");
+          }
+          if (!/[a-z]/.test(value)) {
+            stateObj[name] = t(
+              "Password must contain atleast one lowercase letter"
+            );
+          }
+          if (!/[A-Z]/.test(value)) {
+            stateObj[name] = t(
+              "Password must contain atleast one uppercase letter"
+            );
+          }
+          if (!/\d/.test(value)) {
+            stateObj[name] = t("Password must contain atleast one digit");
+          }
+          if (!/[\W_]/.test(value)) {
+            stateObj[name] = t(
+              "Password must contain atleast one special character"
+            );
           } else if (input.confirmPassword && value !== input.confirmPassword) {
             stateObj["confirmPassword"] = t(
               "passwordsDoesNotMatch",
